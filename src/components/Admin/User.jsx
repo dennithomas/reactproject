@@ -6,10 +6,13 @@ const User = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Check if running on GitHub Pages
   const isProduction = window.location.hostname.includes('github.io');
+  
+  // Correct API URL - Your backend is on port 4000 locally
   const API_URL = isProduction 
-    ? 'https://book-api.onrender.com'
-    : 'http://localhost:10000';
+    ? 'https://your-deployed-backend.com' // Replace with your deployed backend URL
+    : 'http://localhost:4000'; // Changed from 10000 to 4000
 
   useEffect(() => {
     fetchUsers();
@@ -18,31 +21,35 @@ const User = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      setError(null);
       
-      // Try to fetch from backend first
-      if (!isProduction || API_URL.includes('render.com')) {
-        try {
-          console.log('Trying backend users endpoint...');
-          const response = await fetch(`${API_URL}/users`);
-          
-          if (response.ok) {
-            const usersData = await response.json();
-            console.log('Users found in backend:', usersData.length);
-            
-            if (usersData && usersData.length > 0) {
-              setData(usersData);
-              setError(null);
-              setLoading(false);
-              return; // Success with backend
-            }
-          }
-        } catch (backendErr) {
-          console.log('Backend users failed:', backendErr.message);
-        }
+      console.log(`Fetching from: ${API_URL}/users`);
+      
+      const response = await fetch(`${API_URL}/users`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      // If backend fails or no users endpoint, use sample data
-      console.log('Using sample users data');
+      const usersData = await response.json();
+      console.log('Users fetched successfully:', usersData);
+      
+      setData(usersData);
+      
+    } catch (err) {
+      console.error('Error fetching users:', err);
+      
+      // If backend fetch fails, provide helpful error
+      if (isProduction) {
+        setError(`⚠️ Cannot connect to backend at ${API_URL}. Make sure your backend is deployed and running.`);
+      } else {
+        setError(`⚠️ Cannot connect to local backend at ${API_URL}. Make sure: 
+        1. Your JSON server is running (npm start in json_backend folder)
+        2. Server is on port 4000
+        3. db.json has a "users" array`);
+      }
+      
+      // Fallback to sample data
       const sampleUsers = [
         {
           id: 1,
@@ -59,72 +66,45 @@ const User = () => {
           email: "jane@example.com",
           phone: "987-654-3210",
           address: "456 Oak Ave, Los Angeles, CA"
-        },
-        {
-          id: 3,
-          firstName: "Bob",
-          lastName: "Johnson",
-          email: "bob@example.com",
-          phone: "555-123-4567",
-          address: "789 Pine Rd, Chicago, IL"
-        },
-        {
-          id: 4,
-          firstName: "Alice",
-          lastName: "Williams",
-          email: "alice@example.com",
-          phone: "444-555-6666",
-          address: "321 Elm St, Miami, FL"
         }
       ];
       
       setData(sampleUsers);
-      setError('⚠️ Using sample user data. Add real users to your backend db.json file.');
       
-    } catch (err) {
-      console.error('Error in fetchUsers:', err);
-      setError('Failed to load users. Using sample data instead.');
-      
-      // Fallback to minimal sample data
-      setData([
-        { id: 1, firstName: "Demo", lastName: "User", email: "demo@example.com" }
-      ]);
     } finally {
       setLoading(false);
     }
   };
 
   const remove = async (id) => {
-    if (isProduction && !API_URL.includes('render.com')) {
-      alert('Delete functionality is not available on GitHub Pages. Please run locally.');
-      return;
-    }
-    
     if (!window.confirm('Are you sure you want to delete this user?')) {
       return;
     }
     
     try {
-      // Try to delete from backend if available
-      if (!isProduction || API_URL.includes('render.com')) {
-        const response = await fetch(`${API_URL}/users/${id}`, { 
-          method: "DELETE" 
-        });
-        
-        if (response.ok) {
-          console.log('User deleted from backend');
-        }
-      }
+      const response = await fetch(`${API_URL}/users/${id}`, { 
+        method: "DELETE" 
+      });
       
-      // Always update local state
-      setData(prev => prev.filter(item => item.id !== id));
-      alert('User deleted successfully!');
+      if (response.ok) {
+        // Update local state
+        setData(prev => prev.filter(item => item.id !== id));
+        alert('User deleted successfully!');
+      } else {
+        throw new Error('Delete failed');
+      }
       
     } catch (err) {
       console.error('Delete error:', err);
-      // Still update local state even if backend fails
+      
+      // For demo purposes, still update UI if backend delete fails
       setData(prev => prev.filter(item => item.id !== id));
-      alert('User removed from local state.');
+      
+      if (isProduction) {
+        alert('User removed from display (demo mode). In production, ensure backend is connected.');
+      } else {
+        alert('User removed from display. Check if backend server is running.');
+      }
     }
   };
 
@@ -133,9 +113,9 @@ const User = () => {
       <div className="user-page">
         <div className="loading">
           <div className="spinner"></div>
-          Loading users...
+          Loading users from {isProduction ? 'production' : 'local'} backend...
           <div style={{ fontSize: '14px', marginTop: '10px', color: '#666' }}>
-            Checking backend → Using sample data
+            Connecting to: {API_URL}/users
           </div>
         </div>
       </div>
@@ -146,18 +126,18 @@ const User = () => {
     <div className="user-page">
       {error && (
         <div className="user-error">
-          <h3>📝 Note</h3>
+          <h3>📝 Connection Notice</h3>
           <p>{error}</p>
-          {error.includes('sample') && (
-            <div className="sample-info">
-              <p><strong>To add real users:</strong></p>
-              <ol>
-                <li>Open <code>json-backend/db.json</code></li>
-                <li>Add a "users" array with user objects</li>
-                <li>Restart backend: <code>npm start</code></li>
-              </ol>
-            </div>
-          )}
+          <div className="sample-info">
+            <p><strong>Troubleshooting steps:</strong></p>
+            <ol>
+              <li>Navigate to your <code>json_backend</code> folder</li>
+              <li>Ensure <code>db.json</code> has a "users" array</li>
+              <li>Start the server: <code>npm start</code></li>
+              <li>Verify at: <a href="http://localhost:4000/users" target="_blank" rel="noopener noreferrer">http://localhost:4000/users</a></li>
+            </ol>
+            <p><em>Currently showing sample data for demonstration.</em></p>
+          </div>
         </div>
       )}
 
@@ -166,10 +146,8 @@ const User = () => {
           <div className="user-count-box">
             <h1>👥 Total Users: {data.length}</h1>
             <div className="user-mode">
-              Mode: {isProduction ? 'GitHub Pages' : 'Local Development'}
-              {error && error.includes('sample') && 
-                <span className="sample-indicator"> (Using Sample Data)</span>
-              }
+              Backend: {API_URL}
+              {error && <span className="sample-indicator"> (Fallback Mode)</span>}
             </div>
           </div>
         </div>
@@ -177,7 +155,10 @@ const User = () => {
         <h1 className="user-heading">📋 Users Management</h1>
         
         <div className="user-actions-top">
-          <button className="add-user-btn">
+          <button 
+            className="add-user-btn"
+            onClick={() => alert('Add functionality needs to be implemented')}
+          >
             ➕ Add New User
           </button>
           <button onClick={fetchUsers} className="refresh-btn">
@@ -186,52 +167,51 @@ const User = () => {
         </div>
 
         <div className="users-grid">
-          {data.map((ele) => (
-            <div className="user-card" key={ele.id}>
+          {data.map((user) => (
+            <div className="user-card" key={user.id}>
               <div className="user-card-header">
                 <div className="user-avatar">
-                  {ele.firstName.charAt(0)}{ele.lastName.charAt(0)}
+                  {user.firstName?.charAt(0) || 'U'}{user.lastName?.charAt(0) || 'S'}
                 </div>
                 <div className="user-name-info">
-                  <h3 className="user-name">{ele.firstName} {ele.lastName}</h3>
-                  <p className="user-email">{ele.email}</p>
+                  <h3 className="user-name">{user.firstName || 'Unknown'} {user.lastName || 'User'}</h3>
+                  <p className="user-email">{user.email || 'No email'}</p>
                 </div>
-                <span className="user-id">ID: {ele.id}</span>
+                <span className="user-id">ID: {user.id}</span>
               </div>
               
               <div className="user-info-grid">
                 <div className="user-info-item">
                   <strong>📧 Email:</strong>
-                  <span>{ele.email}</span>
+                  <span>{user.email || "Not available"}</span>
                 </div>
                 
                 <div className="user-info-item">
                   <strong>📱 Phone:</strong>
-                  <span>{ele.phone || "Not available"}</span>
+                  <span>{user.phone || "Not available"}</span>
                 </div>
                 
-                {ele.address && (
+                {user.address && (
                   <div className="user-info-item">
                     <strong>🏠 Address:</strong>
-                    <span>{ele.address}</span>
+                    <span>{user.address}</span>
                   </div>
                 )}
               </div>
 
               <div className="user-actions">
-                <button className="edit-btn">
+                <button 
+                  className="edit-btn"
+                  onClick={() => alert('Edit functionality needs to be implemented')}
+                >
                   ✏️ Edit
                 </button>
                 
                 <button 
-                  onClick={() => remove(ele.id)}
+                  onClick={() => remove(user.id)}
                   className="remove-btn"
-                  disabled={isProduction && !API_URL.includes('render.com')}
                 >
-                  {isProduction && !API_URL.includes('render.com') 
-                    ? '❌ Delete (Demo)' 
-                    : '🗑️ Delete'
-                  }
+                  🗑️ Delete
                 </button>
               </div>
             </div>
@@ -239,10 +219,10 @@ const User = () => {
         </div>
         
         <div className="user-footer">
-          <p>Showing {data.length} user{data.length !== 1 ? 's' : ''}</p>
-          {error && error.includes('sample') && (
+          <p>Showing {data.length} user{data.length !== 1 ? 's' : ''} from {error ? 'sample data' : 'backend'}</p>
+          {error && (
             <p className="demo-note">
-              <small>This is a demo. For real user management, add users to your backend.</small>
+              <small>Backend connection issue detected. Using fallback data.</small>
             </p>
           )}
         </div>
