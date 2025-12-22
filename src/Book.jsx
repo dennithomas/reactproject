@@ -11,19 +11,13 @@ const Book = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // ✅ KEEP THIS - Check if we're in production (GitHub Pages) or development
+  // ✅ Check if we're in production (GitHub Pages) or development
   const isProduction = window.location.hostname.includes('github.io');
   
-  // ✅ REPLACE THESE LINES:
-  // const API_URL = isProduction ? '' : 'http://localhost:10000';
-  // const LOCAL_DATA_URL = `${import.meta.env.BASE_URL}data.json`;
-  
-  // ✅ WITH THESE LINES:
+  // ✅ FIXED: Use simpler approach
   const API_URL = isProduction 
     ? 'https://book-api.onrender.com'  // Your deployed backend URL
     : 'http://localhost:10000';        // Local backend
-  
-  const LOCAL_DATA_URL = `${import.meta.env.BASE_URL}data.json`;
 
   useEffect(() => {
     fetchBooks();
@@ -32,26 +26,27 @@ const Book = () => {
   const fetchBooks = async () => {
     try {
       setLoading(true);
+      console.log('isProduction:', isProduction);
+      console.log('API_URL:', API_URL);
       
       if (isProduction) {
-        // Try to fetch from deployed backend first
+        // On GitHub Pages: First try backend, then local JSON
         try {
           await fetchBackendData();
+          console.log('✅ Successfully loaded from backend');
         } catch (backendErr) {
-          console.log('Backend failed, using local data');
-          // If deployed backend fails, use local JSON file
+          console.log('Backend failed, trying local data:', backendErr);
           await fetchLocalData();
         }
       } else {
-        // Use local backend for development
+        // Local development: Use backend only
         await fetchBackendData();
       }
       
     } catch (err) {
-      console.error('Failed to fetch books:', err);
+      console.error('Failed in fetchBooks:', err);
       setError('Failed to load books');
-      // Try local data as fallback
-      await fetchLocalData();
+      await fetchLocalData(); // Always try local as last resort
     } finally {
       setLoading(false);
     }
@@ -59,64 +54,83 @@ const Book = () => {
 
   const fetchBackendData = async () => {
     try {
-      console.log('Fetching from backend:', `${API_URL}/books`);
+      console.log('Trying to fetch from:', `${API_URL}/books`);
       const response = await fetch(`${API_URL}/books`);
-      if (!response.ok) throw new Error('Backend error');
+      
+      if (!response.ok) {
+        throw new Error(`Backend error: ${response.status}`);
+      }
+      
       const books = await response.json();
       setData(books);
       setError(null);
+      console.log('✅ Backend data loaded:', books.length, 'books');
     } catch (err) {
-      throw err; // Re-throw to be caught in parent
+      console.error('fetchBackendData error:', err);
+      throw err;
     }
   };
 
+  // ✅ FIXED: Simplified fetchLocalData
   const fetchLocalData = async () => {
     try {
-      const response = await fetch(LOCAL_DATA_URL);
-      const json = await response.json();
-      setData(json.books || []);
-      setError(null);
+      console.log('Trying to load local data.json...');
+      
+      // Try different paths in order
+      const pathsToTry = [
+        '/data.json',                    // Most common
+        '/reactproject/data.json',       // GitHub Pages with base path
+        `${import.meta.env.BASE_URL}data.json`, // Vite base URL
+        './data.json'                    // Relative path
+      ];
+      
+      for (const path of pathsToTry) {
+        try {
+          console.log('Trying path:', path);
+          const response = await fetch(path);
+          
+          if (response.ok) {
+            const json = await response.json();
+            const books = json.books || json || [];
+            setData(books);
+            setError(null);
+            console.log(`✅ Local data loaded from: ${path} (${books.length} books)`);
+            return; // Success, stop trying
+          }
+        } catch (pathErr) {
+          console.log(`Failed with path ${path}:`, pathErr.message);
+          continue; // Try next path
+        }
+      }
+      
+      // If all paths fail, use sample data
+      throw new Error('All local paths failed');
+      
     } catch (err) {
-      setData([]);
-      setError('Failed to load data from any source');
+      console.error('All local data attempts failed:', err);
+      
+      // Use hardcoded sample data as final fallback
+      const sampleData = [
+        { id: 1, title: "Sample Book 1", thumbnailUrl: "https://via.placeholder.com/150x200?text=Book+1", author: "Author One" },
+        { id: 2, title: "Sample Book 2", thumbnailUrl: "https://via.placeholder.com/150x200?text=Book+2", author: "Author Two" },
+        { id: 3, title: "Sample Book 3", thumbnailUrl: "https://via.placeholder.com/150x200?text=Book+3", author: "Author Three" }
+      ];
+      
+      setData(sampleData);
+      setError('Using sample data - could not load from any source');
+      console.log('⚠️ Using fallback sample data');
     }
   };
 
-  // For GitHub Pages, show appropriate message
+  // Delete function
   const remove = (id) => {
-    if (isProduction) {
-      // On GitHub Pages, try to delete from deployed backend
-      if (!isAdmin) return;
-      
-      if (!window.confirm('Are you sure you want to delete this book?')) {
-        return;
-      }
-      
-      fetch(`${API_URL}/books/${id}`, {
-        method: 'DELETE',
-      })
-      .then(response => {
-        if (response.ok) {
-          setData(prevData => prevData.filter(book => book.id !== id));
-          alert('Book deleted successfully!');
-        } else {
-          alert('Delete failed. Backend might be down.');
-        }
-      })
-      .catch(err => {
-        console.error('Delete error:', err);
-        alert('Delete failed. Please try again.');
-      });
-      return;
-    }
-    
-    // Only run this in local development
     if (!isAdmin) return;
     
     if (!window.confirm('Are you sure you want to delete this book?')) {
       return;
     }
     
+    // For GitHub Pages with deployed backend
     fetch(`${API_URL}/books/${id}`, {
       method: 'DELETE',
     })
@@ -124,11 +138,13 @@ const Book = () => {
       if (response.ok) {
         setData(prevData => prevData.filter(book => book.id !== id));
         alert('Book deleted successfully!');
+      } else {
+        alert('Delete failed. ' + (isProduction ? 'Backend might be down.' : 'Check your local backend.'));
       }
     })
     .catch(err => {
       console.error('Delete error:', err);
-      alert('Failed to delete book.');
+      alert('Delete failed. Please try again.');
     });
   };
 
@@ -146,6 +162,23 @@ const Book = () => {
         <div className="loading">
           <div className="spinner"></div>
           {isProduction ? 'Loading books...' : 'Connecting to backend...'}
+          <div style={{ fontSize: '12px', marginTop: '10px' }}>
+            Mode: {isProduction ? 'Production (GitHub Pages)' : 'Development (Local)'}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !data.length) {
+    return (
+      <div className="container">
+        <div className="error-message">
+          <h3>⚠️ Error Loading Books</h3>
+          <p>{error}</p>
+          <button onClick={fetchBooks} className="retry-btn">
+            🔄 Retry
+          </button>
         </div>
       </div>
     );
@@ -154,16 +187,15 @@ const Book = () => {
   return (
     <div className="container">
       <div className="h1">
-        <h2>Total Books: {data.length}</h2>
-        {isAdmin && !isProduction && (
-          <button 
-            onClick={() => goto('/adminportal/addbook')}
-            className="add-book-btn"
-          >
-            + Add New Book
-          </button>
-        )}
-        {isAdmin && isProduction && (
+        <h2>📚 Total Books: {data.length}</h2>
+        <div className="mode-indicator">
+          Mode: {isProduction ? 'GitHub Pages' : 'Local Development'}
+          {isProduction && API_URL.includes('render.com') && 
+            <span> | Backend: {API_URL.replace('https://', '')}</span>
+          }
+        </div>
+        
+        {isAdmin && (
           <button 
             onClick={() => goto('/adminportal/addbook')}
             className="add-book-btn"
@@ -175,37 +207,48 @@ const Book = () => {
 
       {isProduction && (
         <div className="info-banner">
-          <strong>📢 Note:</strong> Connected to deployed backend at {API_URL}
-        </div>
-      )}
-
-      {data.map((ele, index) => (
-        <div className="ch" key={ele.id}>
-          {isAdmin && <h3>Book No: {index + 1}</h3>}
-          <h3>ID: {ele.id}</h3>
-          <h3>TITLE: {ele.title}</h3>
-          <img src={ele.thumbnailUrl} alt="" />
-
-          <button onClick={() => navigate(ele.id)}>
-            Read the book
-          </button>
-
-          {isAdmin && (
-            <div className="btnbtn">
-              <button onClick={() => remove(ele.id)}>
-                Remove
-              </button>
+          <strong>📢 Note:</strong> {API_URL.includes('render.com') 
+            ? `Connected to deployed backend` 
+            : 'Using local data file'}
+          {data.length > 0 && data[0].id <= 3 && (
+            <div style={{ fontSize: '12px', marginTop: '5px' }}>
+              (Showing sample data - check console for details)
             </div>
           )}
         </div>
-      ))}
+      )}
+
+      <div className="books-container">
+        {data.map((ele, index) => (
+          <div className="book-card" key={ele.id || index}>
+            {isAdmin && <div className="book-number">#{index + 1}</div>}
+            <h3 className="book-title">{ele.title}</h3>
+            {ele.author && <div className="book-author">By: {ele.author}</div>}
+            <img 
+              src={ele.thumbnailUrl} 
+              alt={ele.title}
+              className="book-image"
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/150x200?text=No+Image';
+              }}
+            />
+            
+            <div className="book-actions">
+              <button onClick={() => navigate(ele.id)} className="read-btn">
+                📖 Read Book
+              </button>
+              
+              {isAdmin && (
+                <button onClick={() => remove(ele.id)} className="delete-btn">
+                  🗑️ Delete
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
 export default Book;
-// ⚠️ REMOVE THESE DUPLICATE LINES AT THE BOTTOM:
-// const isProduction = window.location.hostname.includes('github.io');
-// const API_URL = isProduction 
-//   ? 'https://book-api.onrender.com'  // Your Render URL
-//   : 'http://localhost:10000';        // Local backend
