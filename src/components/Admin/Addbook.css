@@ -1,59 +1,123 @@
-/* Main container */
-.container_ab {
-  width: 420px;
-  margin: 60px auto;
-  padding: 25px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+/* Add these to your existing Addbook.css */
+
+.ab_mode_indicator {
+    background: #f0f0f0;
+    padding: 8px 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #666;
 }
 
-/* Heading */
-.ab_heading {
-  text-align: center;
-  margin-bottom: 25px;
-  color: #333;
+.ab_demo_notice {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    color: #856404;
+    font-size: 14px;
 }
 
-/* Form layout */
-.ab_form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+.ab_error {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    color: #721c24;
 }
 
-/* Text inputs */
-.ab_input {
-  padding: 10px 12px;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  outline: none;
+.ab_form_group {
+    margin-bottom: 20px;
 }
 
-.ab_input:focus {
-  border-color: #007bff;
+.ab_form_group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
 }
 
-/* File input */
-.ab_file {
-  font-size: 14px;
-  padding: 6px;
+.ab_file_hint {
+    display: block;
+    margin: 5px 0 10px;
+    color: #666;
+    font-size: 12px;
 }
 
-/* Button */
+.ab_button_group {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+}
+
 .ab_btn {
-  padding: 10px;
-  background-color: #007bff;
-  color: #ffffff;
-  font-size: 15px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    flex: 1;
+    transition: background 0.3s;
 }
 
-.ab_btn:hover {
-  background-color: #0056b3;
+.ab_btn:hover:not(:disabled) {
+    background: #45a049;
+}
+
+.ab_btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.ab_btn_secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    flex: 1;
+    transition: background 0.3s;
+}
+
+.ab_btn_secondary:hover:not(:disabled) {
+    background: #5a6268;
+}
+
+.ab_spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.ab_info {
+    background: #e9f7fe;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.ab_info ul {
+    margin: 5px 0 0 20px;
+    padding: 0;
+}
+
+.ab_info li {
+    margin-bottom: 5px;
 }
