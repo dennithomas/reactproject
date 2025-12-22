@@ -1,0 +1,146 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* PAGE BACKGROUND (INTERACTIVE) */
+body {
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(
+        120deg,
+        #0f2027,
+        #203a43,
+        #2c5364
+    );
+    background-size: 300% 300%;
+    animation: gradientMove 12s ease infinite;
+}
+
+/* BACKGROUND ANIMATION */
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+.h1 h1{
+    color: red;
+}
+
+/* PAGE CONTAINER */
+.container {
+    max-width: 1500px;
+    margin: 40px auto;
+    padding: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+
+    /* Glass effect */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(14px);
+    border-radius: 22px;
+}
+
+/* BOOK CARD */
+.ch {
+    background: rgba(214, 214, 214, 0.85);
+    border-radius: 18px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+/* HOVER EFFECT */
+.ch:hover {
+    background: #ffffff;
+    transform: translateY(-10px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 1);
+}
+
+/* BOOK TITLE & ID */
+.ch h3 {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #333333;
+}
+
+/* IMAGE */
+.ch img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin: 12px 0;
+}
+
+/* BUTTON */
+.ch button {
+    margin-top: 14px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: #ffffff;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+/* BUTTON HOVER */
+.ch button:hover {
+    background: linear-gradient(135deg, #00f2fe, #4facfe);
+    transform: scale(1.08);
+    box-shadow: 0 8px 20px rgba(79, 172, 254, 0.6);
+}
+
+/* BUTTON CLICK */
+.ch button:active {
+    transform: scale(0.96);
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    .container {
+        margin: 20px;
+        padding: 15px;
+    }
+
+    .ch img {
+        height: 220px;
+    }
+}
+.btnbtn button{
+    background-color: red;
+}
+/* Heading */
+/* Heading box */
+.h1 {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+/* Box style */
+.h1 h2 {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #ffffff;
+  padding: 10px 40px;
+  border-radius: 14px;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}

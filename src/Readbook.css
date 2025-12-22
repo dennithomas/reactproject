@@ -1,0 +1,124 @@
+/* PAGE */
+.readbook-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1f1c2c, #928dab);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+/* TITLE */
+.readbook-title {
+    font-size: 34px;
+    color: #ffffff;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+/* CARD */
+.readbook-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+    animation: fadeIn 0.6s ease;
+}
+
+/* TEXT */
+.readbook-text {
+    font-size: 16px;
+    margin: 8px 0;
+    color: #333;
+}
+
+.readbook-book-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.readbook-author {
+    font-style: italic;
+    color: #555;
+}
+
+/* IMAGE */
+.readbook-image-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.readbook-image {
+    width: 100%;
+    max-width: 280px;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+
+/* DESCRIPTION */
+.readbook-description {
+    margin-top: 15px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #444;
+}
+
+/* BUTTONS */
+.readbook-button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    gap: 15px;
+}
+
+.readbook-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* BACK BUTTON */
+.readbook-back-btn button{
+    background: linear-gradient(135deg, #ff512f, #dd2476);
+    /* color: white; */
+    border-radius: 50px;
+    background-color: red;
+}
+
+.readbook-back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* CART BUTTON */
+.readbook-cart-btn {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: white;
+}
+
+.readbook-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

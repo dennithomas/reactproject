@@ -1,0 +1,155 @@
+/* ===============================
+   PAGE WRAPPER
+================================ */
+.user-page {
+  min-height: 100vh;
+  padding: 40px 16px;
+  background: linear-gradient(135deg, #f4f6f8, #eef1f5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ===============================
+   EMPTY STATE
+================================ */
+.user-empty-text {
+  margin-top: 80px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+/* ===============================
+   INNER WRAPPER
+================================ */
+.user-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===============================
+   TOTAL USERS BOX
+================================ */
+.user-count-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+.user-count-box h1 {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #ffffff;
+  padding: 14px 45px;
+  border-radius: 16px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+/* ===============================
+   PAGE HEADING
+================================ */
+.user-heading {
+  font-size: 30px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 32px;
+}
+
+/* ===============================
+   USER CARD
+================================ */
+.user-card {
+  width: 30%;
+  max-width: 760px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 26px 30px;
+  margin-bottom: 26px;
+  border-left: 6px solid #4f46e5;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Hover effect */
+.user-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.18);
+}
+
+/* ===============================
+   USER INFO TEXT
+================================ */
+.user-info {
+  font-size: 15px;
+  color: #374151;
+  margin: 6px 0;
+  line-height: 1.45;
+}
+
+/* Highlight ID */
+.user-info:first-child {
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ===============================
+   ACTION BUTTON
+================================ */
+.user-action {
+  margin-top: 20px;
+}
+
+.user-action button {
+  padding: 11px 26px;
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.user-action button:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+/* Active */
+.user-action button:active {
+  transform: scale(0.95);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 600px) {
+  .user-count-box h1 {
+    font-size: 22px;
+    padding: 12px 28px;
+  }
+
+  .user-heading {
+    font-size: 24px;
+  }
+
+  .user-card {
+    padding: 18px 20px;
+  }
+
+  .user-info {
+    font-size: 14px;
+  }
+}

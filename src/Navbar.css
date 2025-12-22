@@ -1,0 +1,42 @@
+.navbar-container {
+    width: 100%;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    padding: 14px 0;
+     position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+
+.navbar-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Default link */
+.navbar-link {
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+/* Hover */
+.navbar-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ACTIVE (THIS WILL WORK NOW) */
+.navbar-link.active {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    box-shadow: 0 8px 20px rgba(0, 114, 255, 0.6);
+}
+
+/* Logout */
+.logout-link {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+}

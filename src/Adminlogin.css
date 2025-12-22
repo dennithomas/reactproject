@@ -1,0 +1,104 @@
+/* Full page animated gradient background */
+*{
+    margin: 0px;
+}
+.admin-container {
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Glassmorphism card */
+.admin-form {
+    width: 340px;
+    padding: 35px 30px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    animation: slideFade 0.8s ease;
+}
+
+/* Entry animation */
+@keyframes slideFade {
+    from {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Title */
+.admin-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+/* Inputs */
+.admin-input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    font-size: 15px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.admin-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.admin-input:focus {
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 2px rgba(0, 198, 255, 0.5);
+}
+
+/* Button */
+.admin-button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    letter-spacing: 1px;
+}
+
+/* Button hover effect */
+.admin-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0, 114, 255, 0.5);
+}
+
+/* Button click */
+.admin-button:active {
+    transform: scale(0.96);
+}
+
+/* Responsive */
+
+@media (max-width: 400px) {
+    .admin-form {
+        width: 90%;
+        padding: 28px 22px;
+    }
+}

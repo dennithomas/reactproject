@@ -1,0 +1,59 @@
+/* Main container */
+.container_ab {
+  width: 420px;
+  margin: 60px auto;
+  padding: 25px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Heading */
+.ab_heading {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+/* Form layout */
+.ab_form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Text inputs */
+.ab_input {
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+}
+
+.ab_input:focus {
+  border-color: #007bff;
+}
+
+/* File input */
+.ab_file {
+  font-size: 14px;
+  padding: 6px;
+}
+
+/* Button */
+.ab_btn {
+  padding: 10px;
+  background-color: #007bff;
+  color: #ffffff;
+  font-size: 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.ab_btn:hover {
+  background-color: #0056b3;
+}
