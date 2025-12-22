@@ -72,7 +72,7 @@ Make sure:
       const sampleUsers = [
         {
           id: 1,
-          firstName: "John",
+          firstName: "Denni",
           lastName: "Doe",
           email: "john@example.com",
           phone: "123-456-7890",
