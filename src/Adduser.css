@@ -1,72 +1,160 @@
-/* PAGE WRAPPER */
-.MainDiv {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #1f2933, #111827);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Add these styles to your existing Adduser.css */
+
+.adduser-header {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-/* FORM CONTAINER */
-.User-Container {
-    width: 100%;
-    max-width: 420px;
-    background: #ffffff;
-    padding: 35px 30px;
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+.adduser-header h1 {
+    color: #333;
+    margin-bottom: 10px;
 }
 
-/* FORM */
-.User-Form {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+.adduser-mode {
+    background: #f0f0f0;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
 }
 
-/* INPUT FIELDS */
-.User-Form input {
-    padding: 12px 14px;
-    font-size: 15px;
-    border-radius: 10px;
-    border: 1px solid #cbd5e1;
-    outline: none;
-    transition: 0.3s ease;
-}
-
-/* INPUT FOCUS */
-.User-Form input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
-}
-
-/* ADD USER BUTTON */
-.Add-Btn {
+.adduser-demo-notice {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
     padding: 12px;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: white;
-    font-size: 15px;
+    border-radius: 5px;
+    margin: 15px 0;
+    color: #856404;
+    font-size: 14px;
+    text-align: center;
+}
+
+.adduser-error {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 12px;
+    border-radius: 5px;
+    margin: 15px 0;
+    color: #721c24;
+    text-align: center;
+}
+
+.User-Form .form-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.User-Form .form-group label {
+    display: block;
+    margin-bottom: 8px;
     font-weight: 600;
+    color: #333;
+    text-align: left;
+}
+
+.User-Form input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.User-Form input:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+.User-Form input:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin: 25px 0;
+}
+
+.Add-Btn {
+    background: #4CAF50;
+    color: white;
     border: none;
-    border-radius: 12px;
+    padding: 14px 20px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: 600;
+    flex: 1;
+    transition: background 0.3s;
 }
 
-/* BUTTON HOVER */
-.Add-Btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(79, 70, 229, 0.5);
+.Add-Btn:hover:not(:disabled) {
+    background: #45a049;
 }
 
-/* BUTTON ACTIVE */
-.Add-Btn:active {
-    transform: scale(0.96);
+.Add-Btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
-/* RESPONSIVE */
-@media (max-width: 480px) {
-    .User-Container {
-        padding: 25px 20px;
-    }
+.Back-Btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    flex: 1;
+    transition: background 0.3s;
+}
+
+.Back-Btn:hover:not(:disabled) {
+    background: #5a6268;
+}
+
+.Back-Btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.adduser-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.adduser-info {
+    background: #e9f7fe;
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.adduser-info ul {
+    margin: 8px 0 0 20px;
+    padding: 0;
+}
+
+.adduser-info li {
+    margin-bottom: 5px;
+    color: #555;
 }
