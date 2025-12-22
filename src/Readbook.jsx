@@ -26,6 +26,39 @@ const Readbook = () => {
     console.log('isProduction:', isProduction)
     console.log('API_URL:', API_URL)
 
+    // ✅ SAFE RENDER HELPER - ADD THIS FUNCTION
+    const renderSafe = (value, fallback = 'N/A') => {
+        if (value === null || value === undefined || value === '') {
+            return fallback;
+        }
+        
+        // Handle arrays
+        if (Array.isArray(value)) {
+            return value.join(', ');
+        }
+        
+        // Handle objects (including MongoDB dates)
+        if (typeof value === 'object') {
+            // MongoDB date format: {$date: "ISO-string"}
+            if (value.$date) {
+                try {
+                    return new Date(value.$date).toLocaleDateString();
+                } catch {
+                    return String(value.$date);
+                }
+            }
+            // Other objects - convert to string
+            try {
+                return JSON.stringify(value);
+            } catch {
+                return String(value);
+            }
+        }
+        
+        // Handle numbers, booleans, strings
+        return String(value);
+    };
+
     useEffect(() => {
         console.log('useEffect triggered for ID:', id)
         fetchBook()
@@ -49,7 +82,23 @@ const Readbook = () => {
                 if (response.ok) {
                     const bookData = await response.json()
                     console.log('✅ BACKEND SUCCESS! Book found:', bookData)
-                    setData(bookData)
+                    
+                    // ✅ Clean the data to ensure no objects are rendered directly
+                    const cleanedData = {
+                        ...bookData,
+                        // Ensure authors is string or array
+                        authors: Array.isArray(bookData.authors) ? bookData.authors : 
+                                typeof bookData.authors === 'string' ? [bookData.authors] : 
+                                ['Unknown Author'],
+                        // Ensure publishedDate is string
+                        publishedDate: renderSafe(bookData.publishedDate, 'Unknown'),
+                        // Ensure categories is array or string
+                        categories: Array.isArray(bookData.categories) ? bookData.categories : 
+                                  typeof bookData.categories === 'string' ? [bookData.categories] : 
+                                  ['General']
+                    }
+                    
+                    setData(cleanedData)
                     setLoading(false)
                     return
                 } else {
@@ -93,7 +142,20 @@ const Readbook = () => {
                             
                             if (book) {
                                 console.log('✅ LOCAL SUCCESS! Book found:', book)
-                                setData(book)
+                                
+                                // ✅ Clean the data
+                                const cleanedBook = {
+                                    ...book,
+                                    authors: Array.isArray(book.authors) ? book.authors : 
+                                            typeof book.authors === 'string' ? [book.authors] : 
+                                            ['Unknown Author'],
+                                    publishedDate: renderSafe(book.publishedDate, 'Unknown'),
+                                    categories: Array.isArray(book.categories) ? book.categories : 
+                                              typeof book.categories === 'string' ? [book.categories] : 
+                                              ['General']
+                                }
+                                
+                                setData(cleanedBook)
                                 setLoading(false)
                                 return
                             } else {
@@ -110,9 +172,39 @@ const Readbook = () => {
             // METHOD 3: Use hardcoded sample book for ID 7
             console.log('\n3. Checking hardcoded samples...')
             const sampleBooks = {
-                1: { id: 1, title: "Sample Book 1", thumbnailUrl: "https://via.placeholder.com/300x400?text=Book+1", authors: "Author One", longDescription: "Sample description 1" },
-                2: { id: 2, title: "Sample Book 2", thumbnailUrl: "https://via.placeholder.com/300x400?text=Book+2", authors: "Author Two", longDescription: "Sample description 2" },
-                3: { id: 3, title: "Sample Book 3", thumbnailUrl: "https://via.placeholder.com/300x400?text=Book+3", authors: "Author Three", longDescription: "Sample description 3" },
+                1: { 
+                    id: 1, 
+                    title: "Sample Book 1", 
+                    thumbnailUrl: "https://via.placeholder.com/300x400?text=Book+1", 
+                    authors: ["Author One"], 
+                    longDescription: "Sample description 1",
+                    publishedDate: "2023-01-01",
+                    categories: ["Fiction"],
+                    pageCount: 100,
+                    isbn: "1234567890"
+                },
+                2: { 
+                    id: 2, 
+                    title: "Sample Book 2", 
+                    thumbnailUrl: "https://via.placeholder.com/300x400?text=Book+2", 
+                    authors: ["Author Two"], 
+                    longDescription: "Sample description 2",
+                    publishedDate: "2023-02-01",
+                    categories: ["Non-Fiction"],
+                    pageCount: 150,
+                    isbn: "2345678901"
+                },
+                3: { 
+                    id: 3, 
+                    title: "Sample Book 3", 
+                    thumbnailUrl: "https://via.placeholder.com/300x400?text=Book+3", 
+                    authors: ["Author Three"], 
+                    longDescription: "Sample description 3",
+                    publishedDate: "2023-03-01",
+                    categories: ["Science"],
+                    pageCount: 200,
+                    isbn: "3456789012"
+                },
                 7: { 
                     id: 7, 
                     title: "The Great Gatsby", 
@@ -133,7 +225,20 @@ const Readbook = () => {
                 setError('⚠️ Using sample data - add real books to your backend or data.json')
             } else {
                 console.log(`❌ No sample book for ID ${id}`)
-                setError(`Book ID ${id} not found anywhere. Check: 1) Backend running, 2) data.json exists, 3) Book ID is valid`)
+                // Create a simple fallback book
+                const fallbackBook = {
+                    id: id,
+                    title: `Book ${id}`,
+                    authors: ["Unknown Author"],
+                    thumbnailUrl: "https://via.placeholder.com/300x400?text=Book",
+                    longDescription: "Book description not available.",
+                    pageCount: 100,
+                    publishedDate: "Unknown",
+                    categories: ["General"],
+                    isbn: "0000000000"
+                }
+                setData(fallbackBook)
+                setError(`Book ID ${id} not found. Using fallback data.`)
             }
             
         } catch (err) {
@@ -252,41 +357,32 @@ const Readbook = () => {
                     />
                 </div>
 
+                {/* ✅ UPDATED: Using renderSafe helper for ALL fields */}
                 <div className="book-details">
-                    {data.authors && (
-                        <div className="detail-row">
-                            <strong>Author:</strong> 
-                            <span>{Array.isArray(data.authors) ? data.authors.join(', ') : data.authors}</span>
-                        </div>
-                    )}
+                    <div className="detail-row">
+                        <strong>Author:</strong> 
+                        <span>{renderSafe(data.authors)}</span>
+                    </div>
                     
-                    {data.categories && (
-                        <div className="detail-row">
-                            <strong>Category:</strong>
-                            <span>{Array.isArray(data.categories) ? data.categories.join(', ') : data.categories}</span>
-                        </div>
-                    )}
+                    <div className="detail-row">
+                        <strong>Category:</strong>
+                        <span>{renderSafe(data.categories)}</span>
+                    </div>
                     
-                    {data.pageCount && (
-                        <div className="detail-row">
-                            <strong>Pages:</strong>
-                            <span>{data.pageCount}</span>
-                        </div>
-                    )}
+                    <div className="detail-row">
+                        <strong>Pages:</strong>
+                        <span>{renderSafe(data.pageCount)}</span>
+                    </div>
                     
-                    {data.publishedDate && (
-                        <div className="detail-row">
-                            <strong>Published:</strong>
-                            <span>{data.publishedDate}</span>
-                        </div>
-                    )}
+                    <div className="detail-row">
+                        <strong>Published:</strong>
+                        <span>{renderSafe(data.publishedDate)}</span>
+                    </div>
                     
-                    {data.isbn && (
-                        <div className="detail-row">
-                            <strong>ISBN:</strong>
-                            <span>{data.isbn}</span>
-                        </div>
-                    )}
+                    <div className="detail-row">
+                        <strong>ISBN:</strong>
+                        <span>{renderSafe(data.isbn)}</span>
+                    </div>
                 </div>
 
                 {(data.longDescription || data.shortDescription) && (
