@@ -11,118 +11,125 @@ const Book = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // ✅ Backend API URL - Using port 10000 from your package.json
-  const API_URL = 'http://localhost:10000'; // Your JSON Server runs on port 10000
+  // ✅ KEEP THIS - Check if we're in production (GitHub Pages) or development
+  const isProduction = window.location.hostname.includes('github.io');
+  
+  // ✅ REPLACE THESE LINES:
+  // const API_URL = isProduction ? '' : 'http://localhost:10000';
+  // const LOCAL_DATA_URL = `${import.meta.env.BASE_URL}data.json`;
+  
+  // ✅ WITH THESE LINES:
+  const API_URL = isProduction 
+    ? 'https://book-api.onrender.com'  // Your deployed backend URL
+    : 'http://localhost:10000';        // Local backend
+  
+  const LOCAL_DATA_URL = `${import.meta.env.BASE_URL}data.json`;
 
-  // ✅ FETCH FROM BACKEND
   useEffect(() => {
     fetchBooks();
   }, []);
 
-  // Function to fetch books from backend
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/books`);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (isProduction) {
+        // Try to fetch from deployed backend first
+        try {
+          await fetchBackendData();
+        } catch (backendErr) {
+          console.log('Backend failed, using local data');
+          // If deployed backend fails, use local JSON file
+          await fetchLocalData();
+        }
+      } else {
+        // Use local backend for development
+        await fetchBackendData();
       }
       
-      const books = await response.json();
-      setData(books);
-      setError(null);
     } catch (err) {
       console.error('Failed to fetch books:', err);
-      setError('Failed to load books. Please check if backend is running on port 10000.');
-      
-      // Fallback to local data if backend is down
-      fetchLocalData();
+      setError('Failed to load books');
+      // Try local data as fallback
+      await fetchLocalData();
     } finally {
       setLoading(false);
     }
   };
 
-  // Fallback function if backend fails
-  const fetchLocalData = () => {
-    fetch(`${import.meta.env.BASE_URL}data.json`)
-      .then(res => res.json())
-      .then(json => {
-        setData(json.books || []);
-      })
-      .catch(() => {
-        setData([]);
-      });
+  const fetchBackendData = async () => {
+    try {
+      console.log('Fetching from backend:', `${API_URL}/books`);
+      const response = await fetch(`${API_URL}/books`);
+      if (!response.ok) throw new Error('Backend error');
+      const books = await response.json();
+      setData(books);
+      setError(null);
+    } catch (err) {
+      throw err; // Re-throw to be caught in parent
+    }
   };
 
-  // ✅ DELETE FUNCTION for backend
-  const remove = async (id) => {
+  const fetchLocalData = async () => {
+    try {
+      const response = await fetch(LOCAL_DATA_URL);
+      const json = await response.json();
+      setData(json.books || []);
+      setError(null);
+    } catch (err) {
+      setData([]);
+      setError('Failed to load data from any source');
+    }
+  };
+
+  // For GitHub Pages, show appropriate message
+  const remove = (id) => {
+    if (isProduction) {
+      // On GitHub Pages, try to delete from deployed backend
+      if (!isAdmin) return;
+      
+      if (!window.confirm('Are you sure you want to delete this book?')) {
+        return;
+      }
+      
+      fetch(`${API_URL}/books/${id}`, {
+        method: 'DELETE',
+      })
+      .then(response => {
+        if (response.ok) {
+          setData(prevData => prevData.filter(book => book.id !== id));
+          alert('Book deleted successfully!');
+        } else {
+          alert('Delete failed. Backend might be down.');
+        }
+      })
+      .catch(err => {
+        console.error('Delete error:', err);
+        alert('Delete failed. Please try again.');
+      });
+      return;
+    }
+    
+    // Only run this in local development
     if (!isAdmin) return;
     
     if (!window.confirm('Are you sure you want to delete this book?')) {
       return;
     }
     
-    try {
-      const response = await fetch(`${API_URL}/books/${id}`, {
-        method: 'DELETE',
-      });
-      
+    fetch(`${API_URL}/books/${id}`, {
+      method: 'DELETE',
+    })
+    .then(response => {
       if (response.ok) {
-        // Remove from local state
         setData(prevData => prevData.filter(book => book.id !== id));
         alert('Book deleted successfully!');
-      } else {
-        throw new Error('Failed to delete book');
       }
-    } catch (err) {
+    })
+    .catch(err => {
       console.error('Delete error:', err);
-      alert('Failed to delete book. Please try again.');
-    }
-  };
-
-  // ✅ ADD BOOK FUNCTION (if you have an add book page)
-  const handleAddBook = async (bookData) => {
-    try {
-      const response = await fetch(`${API_URL}/books`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookData),
-      });
-      
-      if (response.ok) {
-        const newBook = await response.json();
-        setData(prev => [...prev, newBook]);
-        return newBook;
-      }
-    } catch (err) {
-      console.error('Add book error:', err);
-    }
-  };
-
-  // ✅ UPDATE BOOK FUNCTION
-  const handleUpdateBook = async (id, bookData) => {
-    try {
-      const response = await fetch(`${API_URL}/books/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookData),
-      });
-      
-      if (response.ok) {
-        const updatedBook = await response.json();
-        setData(prev => prev.map(book => 
-          book.id === id ? updatedBook : book
-        ));
-        return updatedBook;
-      }
-    } catch (err) {
-      console.error('Update book error:', err);
-    }
+      alert('Failed to delete book.');
+    });
   };
 
   function navigate(id) {
@@ -138,24 +145,8 @@ const Book = () => {
       <div className="container">
         <div className="loading">
           <div className="spinner"></div>
-          Loading books from backend...
+          {isProduction ? 'Loading books...' : 'Connecting to backend...'}
         </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container">
-        <div className="error">
-          <h3>⚠️ Connection Error</h3>
-          <p>{error}</p>
-          <p>Make sure your backend is running:</p>
-          <code>npm start</code> in the json-backend folder
-        </div>
-        <button onClick={fetchBooks} className="retry-btn">
-          🔄 Retry Connection
-        </button>
       </div>
     );
   }
@@ -163,75 +154,58 @@ const Book = () => {
   return (
     <div className="container">
       <div className="h1">
-        <h2>📚 Total Books: {data.length}</h2>
-        {isAdmin && (
+        <h2>Total Books: {data.length}</h2>
+        {isAdmin && !isProduction && (
           <button 
             onClick={() => goto('/adminportal/addbook')}
             className="add-book-btn"
           >
-            ➕ Add New Book
+            + Add New Book
+          </button>
+        )}
+        {isAdmin && isProduction && (
+          <button 
+            onClick={() => goto('/adminportal/addbook')}
+            className="add-book-btn"
+          >
+            + Add New Book
           </button>
         )}
       </div>
 
-      {data.length === 0 ? (
-        <div className="no-books">
-          📭 No books found in the database
-          <br />
-          <small>Add some books or check your backend connection</small>
-        </div>
-      ) : (
-        <div className="books-grid">
-          {data.map((ele, index) => (
-            <div className="book-card" key={ele.id}>
-              {isAdmin && <div className="book-number">#{index + 1}</div>}
-              <div className="book-id">ID: {ele.id}</div>
-              <h3 className="book-title">{ele.title}</h3>
-              {ele.author && <div className="book-author">By: {ele.author}</div>}
-              
-              {ele.thumbnailUrl && (
-                <img 
-                  src={ele.thumbnailUrl} 
-                  alt={ele.title}
-                  className="book-image"
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/150x200?text=No+Image';
-                  }}
-                />
-              )}
-              
-              <div className="book-actions">
-                <button 
-                  onClick={() => navigate(ele.id)} 
-                  className="read-btn"
-                >
-                  📖 Read Book
-                </button>
-                
-                {isAdmin && (
-                  <div className="admin-actions">
-                    <button 
-                      onClick={() => goto(`/adminportal/editbook/${ele.id}`)}
-                      className="edit-btn"
-                    >
-                      ✏️ Edit
-                    </button>
-                    
-                    <button 
-                      onClick={() => remove(ele.id)}
-                      className="delete-btn"
-                    >
-                      🗑️ Delete
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+      {isProduction && (
+        <div className="info-banner">
+          <strong>📢 Note:</strong> Connected to deployed backend at {API_URL}
         </div>
       )}
+
+      {data.map((ele, index) => (
+        <div className="ch" key={ele.id}>
+          {isAdmin && <h3>Book No: {index + 1}</h3>}
+          <h3>ID: {ele.id}</h3>
+          <h3>TITLE: {ele.title}</h3>
+          <img src={ele.thumbnailUrl} alt="" />
+
+          <button onClick={() => navigate(ele.id)}>
+            Read the book
+          </button>
+
+          {isAdmin && (
+            <div className="btnbtn">
+              <button onClick={() => remove(ele.id)}>
+                Remove
+              </button>
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };
 
 export default Book;
+// ⚠️ REMOVE THESE DUPLICATE LINES AT THE BOTTOM:
+// const isProduction = window.location.hostname.includes('github.io');
+// const API_URL = isProduction 
+//   ? 'https://book-api.onrender.com'  // Your Render URL
+//   : 'http://localhost:10000';        // Local backend
