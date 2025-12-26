@@ -1,123 +1,225 @@
-/* Add these to your existing Addbook.css */
+/* =========================
+   PAGE BACKGROUND
+========================= */
+.container_ab {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 15px;
+}
+
+/* =========================
+   HEADING
+========================= */
+.ab_heading {
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
 
 .ab_mode_indicator {
-    background: #f0f0f0;
-    padding: 8px 15px;
-    border-radius: 5px;
-    margin: 10px 0;
     font-size: 14px;
-    color: #666;
+    color: #e0e0e0;
+    margin-bottom: 18px;
 }
 
+/* =========================
+   CARD FORM
+========================= */
+.ab_form {
+    background: #ffffff;
+    width: 100%;
+    max-width: 520px;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+}
+
+/* =========================
+   DEMO NOTICE
+========================= */
 .ab_demo_notice {
     background: #fff3cd;
-    border: 1px solid #ffeaa7;
-    padding: 10px;
-    border-radius: 5px;
-    margin: 10px 0;
     color: #856404;
-    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 15px;
+    max-width: 520px;
 }
 
+/* =========================
+   ERROR MESSAGE
+========================= */
 .ab_error {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    padding: 10px;
-    border-radius: 5px;
-    margin: 10px 0;
-    color: #721c24;
+    background: #ffe0e0;
+    color: #b00020;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    max-width: 520px;
 }
 
+/* =========================
+   FORM GROUP
+========================= */
 .ab_form_group {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
 }
 
 .ab_form_group label {
-    display: block;
-    margin-bottom: 5px;
+    font-size: 14px;
     font-weight: 600;
     color: #333;
+    margin-bottom: 6px;
 }
 
+/* =========================
+   INPUTS
+========================= */
+.ab_input,
+.ab_file {
+    padding: 10px 12px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.ab_input:focus,
+.ab_file:focus {
+    border-color: #2c5364;
+    box-shadow: 0 0 0 2px rgba(44, 83, 100, 0.15);
+}
+
+.ab_input:disabled,
+.ab_file:disabled {
+    background: #f2f2f2;
+    cursor: not-allowed;
+}
+
+/* =========================
+   FILE HINT
+========================= */
 .ab_file_hint {
-    display: block;
-    margin: 5px 0 10px;
-    color: #666;
     font-size: 12px;
+    color: #666;
+    margin: 6px 0 8px;
 }
 
+/* =========================
+   BUTTONS
+========================= */
 .ab_button_group {
     display: flex;
-    gap: 15px;
-    margin: 20px 0;
+    gap: 12px;
+    margin-top: 10px;
 }
 
 .ab_btn {
-    background: #4CAF50;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
     flex: 1;
-    transition: background 0.3s;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #2c5364, #203a43);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.ab_btn:hover:not(:disabled) {
-    background: #45a049;
+.ab_btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 .ab_btn:disabled {
-    background: #cccccc;
+    background: #9aa9b2;
     cursor: not-allowed;
-    opacity: 0.7;
 }
 
 .ab_btn_secondary {
-    background: #6c757d;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
     flex: 1;
-    transition: background 0.3s;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
 }
 
-.ab_btn_secondary:hover:not(:disabled) {
-    background: #5a6268;
+.ab_btn_secondary:hover {
+    background: #cfcfcf;
 }
 
+.ab_btn_secondary:disabled {
+    background: #eeeeee;
+    cursor: not-allowed;
+}
+
+/* =========================
+   LOADING SPINNER
+========================= */
 .ab_spinner {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
     border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
     border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
+    display: inline-block;
     margin-right: 8px;
+    animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
+/* =========================
+   INFO SECTION
+========================= */
 .ab_info {
-    background: #e9f7fe;
-    padding: 15px;
-    border-radius: 5px;
-    margin-top: 20px;
-    font-size: 14px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #555;
 }
 
 .ab_info ul {
-    margin: 5px 0 0 20px;
-    padding: 0;
+    padding-left: 18px;
+    margin-top: 6px;
 }
 
 .ab_info li {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 480px) {
+    .ab_heading {
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .ab_form {
+        padding: 22px;
+    }
+
+    .ab_button_group {
+        flex-direction: column;
+    }
 }

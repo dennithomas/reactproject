@@ -250,12 +250,7 @@ const User = () => {
         <h1 className="user-heading">📋 Users Management</h1>
         
         <div className="user-actions-top">
-          <button 
-            className="add-user-btn"
-            onClick={() => alert('Add user form would appear here')}
-          >
-            ➕ Add New User
-          </button>
+       
           <button onClick={fetchUsers} className="refresh-btn">
             🔄 Refresh List
           </button>
